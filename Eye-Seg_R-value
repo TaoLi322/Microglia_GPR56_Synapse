@@ -1,0 +1,88 @@
+// The code was originally programmed by Dr. Alexandre Tiriac, and modified by Dr. Tao Li. 
+// Run this code in Matlab. 
+// "Image Acquisition" and "Curve Fitting" APP are required. 
+// 16-bit images are required. 8-bit images can also be applied, just change the value 65535 to 255.  
+
+
+% User loading of files
+%Loading the ipsi image
+disp('pick the Ipsi file'); 
+[ipsi_name, path_name] = uigetfile([path, 'experiment', '/*.tif']);
+
+%Loading the contra image
+disp('pick the Contra file'); 
+[contra_name, path_name] = uigetfile([path, 'experiment', '/*.tif']);
+
+%Loading the LGN mask image, Mask image was creared by outlining the dLGN,
+%filling dLGN with white and non-dLGN with black. 
+
+disp('pick the LGN mask file'); 
+[lgnMask_name, path_name] = uigetfile([path, 'experiment', '/*.tif']);
+
+
+
+%Loading the movie
+[height, width] = size(imread(ipsi_name,1));
+% ipsiMat = zeros(height, width);
+% contraMat = zeros(height, width);
+
+ipsiMat(:,:) = imread(ipsi_name);
+contraMat(:,:) = imread(contra_name);
+lgnMask(:,:) = imread(lgnMask_name);
+%End loading the movie
+
+disp('Done loading movie')
+
+% Keep only the dLGN
+
+lgnMask = lgnMask/65535;
+
+ipsiLGN = ipsiMat.*lgnMask;
+contraLGN = contraMat.*lgnMask;
+
+ipsiLGN = double(ipsiLGN);
+contraLGN = double(contraLGN);
+
+% Normalize data (skip this if preprocessed) %%work in progress
+
+lineIpsi = reshape(ipsiLGN,[1 height*width]);
+lineIpsi(lineIpsi == 0) = [];
+ipsi95 = prctile(lineIpsi, 95);
+
+
+lineContra = reshape(contraLGN,[1 height*width]);
+lineContra(lineContra == 0) = [];
+contra95 = prctile(lineContra, 95);
+
+
+normIpsiLGN = ipsiLGN./ipsi95 * 65535;
+normContraLGN = contraLGN./contra95 * 65535;
+
+%Saturate to 65535
+normIpsiLGN(normIpsiLGN > 65535) = 65535;
+normContraLGN(normContraLGN > 65535) = 65535;
+
+
+% backIpsi = ipsiMat.*backMask;
+% backIpsi = reshape(backIpsi,[1 height*width]);
+% backIpsi(backIpsi == 0) = [];
+
+
+
+% Cacl LogR
+
+imageR = normIpsiLGN./normContraLGN;
+imageLogR = log10(imageR);
+
+lineLogR = reshape(imageLogR, [1 height*width]);
+lineLogR(isnan(lineLogR)) = [];
+lineLogR(isinf(lineLogR)) = [];
+
+
+figure, histogram(lineLogR,'BinLimits',[-3,3],'BinWidth',0.05, 'Normalization','probability')
+
+
+figure, imagesc(imageLogR), colormap(jet)
+
+
+var(lineLogR)
