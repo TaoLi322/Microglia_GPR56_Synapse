@@ -1,0 +1,65 @@
+function synapse(input, filename) {
+	open(input + filename);
+	imageTitle=getTitle();
+	run("Split Channels");
+	selectWindow(imageTitle+" (blue)");
+	close();
+	selectWindow(imageTitle+" (green)");
+	run("Subtract Background...", "rolling=10");
+	setAutoThreshold("Default dark");
+	//Choose a Threshold method which is best for your images; 
+	setOption("BlackBackground", false);
+	run("Convert to Mask");
+	run("Analyze Particles...", "size=0-Infinity show=Masks summarize");
+	run("Analyze Particles...", "size=2-Infinity show=Masks summarize");
+	run("Analyze Particles...", "size=4-Infinity show=Masks summarize");
+	run("Analyze Particles...", "size=6-Infinity show=Masks summarize");
+	run("Analyze Particles...", "size=8-Infinity show=Masks summarize");
+	run("Analyze Particles...", "size=10-Infinity show=Masks summarize");
+	//Quantify green synapse number with different sizes
+	selectWindow(imageTitle+" (red)");
+	run("Subtract Background...", "rolling=10");
+	setAutoThreshold("Default dark");
+	//Choose a Threshold method which is best for your images;
+	setOption("BlackBackground", false);
+	run("Convert to Mask");
+	run("Analyze Particles...", "size=0-Infinity show=Masks summarize");
+	run("Analyze Particles...", "size=2-Infinity show=Masks summarize");
+	run("Analyze Particles...", "size=4-Infinity show=Masks summarize");
+	run("Analyze Particles...", "size=6-Infinity show=Masks summarize");
+	run("Analyze Particles...", "size=8-Infinity show=Masks summarize");
+	run("Analyze Particles...", "size=10-Infinity show=Masks summarize");
+	//Quantify red synapse number with different sizes
+	imageCalculator("AND create", "Mask of "+imageTitle+" (red)","Mask of "+imageTitle+" (green)");
+	selectWindow("Result of "+"Mask of "+imageTitle+" (red)");
+	run("Analyze Particles...", "summarize");
+	//Quantify colocalized synapse number with size>=0
+	imageCalculator("AND create", "Mask of Mask of "+imageTitle+" (red)","Mask of Mask of "+imageTitle+" (green)");
+	selectWindow("Result of "+"Mask of Mask of "+imageTitle+" (red)");
+	run("Analyze Particles...", "summarize");
+	//Quantify colocalized synapse number with size>=2
+	imageCalculator("AND create", "Mask of Mask of Mask of "+imageTitle+" (red)","Mask of Mask of Mask of "+imageTitle+" (green)");
+	selectWindow("Result of "+"Mask of Mask of Mask of "+imageTitle+" (red)");
+	run("Analyze Particles...", "summarize");
+	//Quantify colocalized synapse number with size>=4
+	imageCalculator("AND create", "Mask of Mask of Mask of Mask of "+imageTitle+" (red)","Mask of Mask of Mask of Mask of "+imageTitle+" (green)");
+	selectWindow("Result of "+"Mask of Mask of Mask of Mask of "+imageTitle+" (red)");
+	run("Analyze Particles...", "summarize");
+	//Quantify colocalized synapse number with size>=6
+	imageCalculator("AND create", "Mask of Mask of Mask of Mask of Mask of "+imageTitle+" (red)","Mask of Mask of Mask of Mask of Mask of "+imageTitle+" (green)");
+	selectWindow("Result of "+"Mask of Mask of Mask of Mask of Mask of "+imageTitle+" (red)");
+	run("Analyze Particles...", "summarize");
+	//Quantify colocalized synapse number with size>=8
+	imageCalculator("AND create", "Mask of Mask of Mask of Mask of Mask of Mask of "+imageTitle+" (red)","Mask of Mask of Mask of Mask of Mask of Mask of "+imageTitle+" (green)");
+	selectWindow("Result of "+"Mask of Mask of Mask of Mask of Mask of Mask of "+imageTitle+" (red)");
+	run("Analyze Particles...", "summarize");
+	//Quantify colocalized synapse number with size>=10
+}
+
+input = getDirectory("Choose a Directory");
+
+setBatchMode(true); 
+list = getFileList(input);
+for (i = 0; i < list.length; i++)
+        synapse(input, list[i]);
+setBatchMode(false);
