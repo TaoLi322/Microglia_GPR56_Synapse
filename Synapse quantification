@@ -1,0 +1,34 @@
+// Synapse quantification
+// Input this code into ImageJ Macro
+// Image requirements: 1. 101.5*101.5 um; 2. 1024*1024 pixel;
+
+imageTitle=getTitle();
+run("Split Channels");
+selectWindow(imageTitle+" (blue)"); 
+close();
+selectWindow(imageTitle+" (green)");
+run("Subtract Background...", "rolling=10");
+selectWindow(imageTitle+" (green)");
+run("Duplicate..."," ");
+waitForUser( "Pause","Set Threshold"); 
+selectWindow(imageTitle+" (green)-1");
+run("Analyze Particles...", "summarize");
+selectWindow(imageTitle+" (red)");
+run("Subtract Background...", "rolling=10");
+selectWindow(imageTitle+" (red)");
+run("Duplicate..."," ");
+waitForUser( "Pause","Set Threshold"); 
+selectWindow(imageTitle+" (red)-1");
+run("Analyze Particles...", "summarize");
+imageCalculator("AND create", imageTitle+" (red)-1",imageTitle+" (green)-1");
+selectWindow("Result of "+imageTitle+" (red)-1");
+run("Analyze Particles...", "summarize");
+close();
+selectWindow(imageTitle+" (red)");
+close();
+selectWindow(imageTitle+" (green)");
+close();
+selectWindow(imageTitle+" (red)-1");
+close();
+selectWindow(imageTitle+" (green)-1");
+close();
