@@ -79,7 +79,7 @@ lineLogR(isnan(lineLogR)) = [];
 lineLogR(isinf(lineLogR)) = [];
 
 
-figure, histogram(lineLogR,'BinLimits',[-3,3],'BinWidth',0.05, 'Normalization','probability')
+figure, histogram(lineLogR,'BinLimits',[-5,5],'BinWidth',0.05, 'Normalization','probability')
 
 
 figure, imagesc(imageLogR), colormap(jet)
