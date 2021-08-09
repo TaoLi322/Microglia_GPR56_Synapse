@@ -1,4 +1,3 @@
-// The code was originally programmed by Dr. Alexandre Tiriac, and modified by Dr. Tao Li. 
 // Run this code in Matlab. 
 // "Image Acquisition" and "Curve Fitting" APP are required. 
 // 16-bit images are required. 8-bit images can also be applied, just change the value 65535 to 255.  
